@@ -1,9 +1,12 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
+	"os"
 
+	"github.com/joho/godotenv"
 	db "github.com/siiickok/full-web-proj/db"
 	tp "github.com/siiickok/full-web-proj/types"
 
@@ -11,14 +14,33 @@ import (
 )
 
 const(
-    port = ":5050"
-    dbStr = "host=localhost user=postgres dbname=postgres password=postgres port=5432 sslmode=disable"
+    port = ":6969"
 )
 
 func main() { 
+    err := godotenv.Load(".env")
+    if err != nil {
+        log.Fatalln("[PANIC]", err)
+    }
+    var(
+        dbAddr     = getEnvOrDefault("DB_ADDRESS", "5432")
+        hostName   = getEnvOrDefault("DB_HOSTNAME", "localhost")
+        userName   = getEnvOrDefault("USERNAME", "postgres")
+        dbName     = getEnvOrDefault("DB_NAME", "postgres")
+        dbPassword = getEnvOrDefault("DB_PASSWORD", "postgres")
+    )
+    dbStr := fmt.Sprintf(
+        "host=%s user=%s dbname=%s password=%s port=%s sslmode=disable", 
+        hostName, 
+        userName, 
+        dbName, 
+        dbPassword, 
+        dbAddr)
     sv, err := NewServer(port, dbStr)
+    if err != nil {
+        log.Fatalln("[PANIC]", err)
+    }
     sv.RegisterHandlers()
-
     if err != nil {
         log.Fatalln("[PANIC]", err)
     }
@@ -28,17 +50,23 @@ func main() {
 }
 
 type Server struct {
-    DB   tp.DB
     Mux  *http.ServeMux
+    DB   tp.DB
     Addr string
 }
 
 func NewServer(addr string, dbStr string) (Server, error) {
     mux := http.NewServeMux()
-    pq, err := db.PostgresOpen(dbStr); if err != nil { return Server{}, err }
-    if err := pq.Ping(); err != nil { return Server{}, err }
+    pq, err := db.PostgresOpen(dbStr); if err != nil { 
+        return Server{}, err 
+    }
+    if err := pq.Ping(); err != nil { 
+        return Server{}, err 
+    }
     log.Println("[INFO]", "Successfully connected to database")
-    if err := pq.Init(); err != nil { return Server{}, err }
+    if err := pq.Init(); err != nil { 
+        return Server{}, err 
+    }
     log.Println("[INFO]", "Successfully initialized the database")
     return Server {
         Addr: addr,
@@ -50,5 +78,13 @@ func NewServer(addr string, dbStr string) (Server, error) {
 func (s Server) Run() error {
     log.Printf("[INFO] Starting Server at port `%s`\n", s.Addr)
     return http.ListenAndServe(s.Addr, s.Mux)
+}
+
+func getEnvOrDefault(key string, default_str string) string {
+    res := os.Getenv(key)
+    if res == "" {
+        return default_str
+    }
+    return res
 }
 

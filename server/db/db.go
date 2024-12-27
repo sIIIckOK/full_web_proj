@@ -34,7 +34,6 @@ func (p PostgresDB) Init() error {
         price DECIMAL)
     `
     _, err := p.db.Exec(query)
-
     return err
 }
 
@@ -47,7 +46,7 @@ func (p PostgresDB) GetItem(id int) (tp.Item, error) {
     `
     var it tp.Item
     it.Id = id
-    if err := p.db.QueryRow(query, id).Scan(it.Title, it.Price); err != nil {
+    if err := p.db.QueryRow(query, id).Scan(&it.Title, &it.Price); err != nil {
         return it, err
     }
     return it, nil
@@ -82,7 +81,6 @@ func (p PostgresDB) PostItem(item tp.Item) error {
         VALUES ($1, $2)
     `
     _, err := p.db.Exec(query, item.Title, item.Price)
-
     return err
 }
 
