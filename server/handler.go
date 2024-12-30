@@ -14,6 +14,9 @@ func (s Server) RegisterHandlers() {
     s.Mux.HandleFunc("GET /get-items", s.HandleGetItems)
 
     s.Mux.HandleFunc("POST /post-item", s.HandlePostItem)
+
+    //Testing
+    s.Mux.HandleFunc("GET /ping", s.HandlePing)
 }
 
 func (s Server) HandleGetItem(w http.ResponseWriter, r *http.Request) {
@@ -65,6 +68,18 @@ func (s Server) HandlePostItem(w http.ResponseWriter, r *http.Request) {
     log.Println("POST PostItem", it.Title, it.Price)
 }
 
+func (s Server) HandlePing(w http.ResponseWriter, r *http.Request) {
+    fmt.Println("Ping")
+    ping := struct { 
+        Ping string `json:"ping"` 
+    }{ 
+        Ping: "pong", 
+    }
+    if err := WriteJSON(w, ping); err != nil {
+        w.WriteHeader(http.StatusInternalServerError)
+    }
+}
+
 func WriteJSON(w http.ResponseWriter, v any) error {
     w.Header().Add("Content-Type", "application/json")
     data, err := json.Marshal(v)
@@ -74,9 +89,4 @@ func WriteJSON(w http.ResponseWriter, v any) error {
     w.Write(data)
     return nil
 }
-
-func (s Server) Pong() {
-}
-
-
 

@@ -1,0 +1,37 @@
+
+.footer{
+    background-color: #37803a;
+}
+
+.footer h1{
+    padding: 20px 0px 5px 20px;
+    color: #F1F8E9;
+    font-size: 4rem;
+    font-weight: 700;
+
+}
+
+.footer p{
+    padding: 5px 20px 20px 20px;
+    display: flex;
+    justify-content: center;
+    color: #A5D6A7;
+}
+
+.footer li{
+    color:#37803a;
+    text-decoration: none;
+    padding: 15px 15px 0px 15px;
+}
+
+.footer a{
+    text-decoration: none;
+    color: #A5D6A7  ;
+    transition: 0.4s;
+    padding: 15px;
+}
+.footer a:hover{
+    text-decoration: none;
+    color: #4CAF50;
+}
+
