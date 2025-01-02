@@ -40,9 +40,12 @@ func (p PostgresDB) Init() error {
 func (p PostgresDB) GetItem(id int) (tp.Item, error) {
     query := 
     `
-    SELECT title, price
-        FROM item
-            WHERE id = $1
+    SELECT 
+        title, price
+    FROM 
+        item
+    WHERE 
+        id = $1
     `
     var it tp.Item
     it.Id = id
@@ -52,11 +55,13 @@ func (p PostgresDB) GetItem(id int) (tp.Item, error) {
     return it, nil
 }
 
-func (p PostgresDB) GetItems(amount int) ([]tp.Item, error) {
+func (p PostgresDB) GetItems() ([]tp.Item, error) {
     query := 
     `
-    SELECT (id, title, price)
-        FROM item
+    SELECT 
+        id, title, price
+    FROM 
+        item
     `
     rows, err := p.db.Query(query)
     if err != nil { return nil, err }
@@ -64,12 +69,14 @@ func (p PostgresDB) GetItems(amount int) ([]tp.Item, error) {
     var its []tp.Item
     var it tp.Item
 
-    i := amount
-    for rows.Next() && i > 0 {
-        if err := rows.Err(); err != nil { return nil, err }
-        rows.Scan(&it.Id, &it.Title, &it.Price)
+    for rows.Next() {
+        if err := rows.Err(); err != nil { 
+            return nil, err 
+        }
+        if err := rows.Scan(&it.Id, &it.Title, &it.Price); err != nil {
+            return nil, err 
+        }
         its = append(its, it)
-        i--
     }
     return its, nil
 }

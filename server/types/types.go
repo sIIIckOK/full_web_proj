@@ -7,7 +7,7 @@ type DB interface {
     Init() error
 
     GetItem(id int) (Item, error)
-    GetItems(number int) ([]Item, error)
+    GetItems() ([]Item, error)
     PostItem(Item) error
 }
 

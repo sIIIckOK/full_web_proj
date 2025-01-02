@@ -3,7 +3,7 @@ import './Footer.css'
 export default function Footer() {
     return (
         <section id="footer">
-            <div class="footer">
+            <div className="footer">
                 <h1>About Us</h1>
                 <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam pharetra consectetur tincidunt. 
                     Cras varius odio eget dui malesuada, et dictum est bibendum. Nam mattis urna mauris, a maximus arcu volutpat id.

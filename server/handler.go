@@ -14,13 +14,13 @@ func (s Server) RegisterHandlers() {
     s.Mux.Handle("/", http.FileServer(http.Dir("./dist")))
 
     //API
-    s.Mux.HandleFunc("GET /get-item", s.HandleGetItem)
-    s.Mux.HandleFunc("GET /get-items", s.HandleGetItems)
+    s.Mux.HandleFunc("GET /api/get-item", s.HandleGetItem)
+    s.Mux.HandleFunc("GET /api/get-items", s.HandleGetItems)
 
-    s.Mux.HandleFunc("POST /post-item", s.HandlePostItem)
+    s.Mux.HandleFunc("POST /api/post-item", s.HandlePostItem)
 
     //Testing
-    s.Mux.HandleFunc("GET /ping", s.HandlePing)
+    s.Mux.HandleFunc("GET /api/ping", s.HandlePing)
 }
 
 func (s Server) HandleGetItem(w http.ResponseWriter, r *http.Request) {
@@ -44,18 +44,13 @@ func (s Server) HandleGetItem(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s Server) HandleGetItems(w http.ResponseWriter, r *http.Request) {
-    var amount struct { Amount int `json:"amount"` }
-    if err := json.NewDecoder(r.Body).Decode(&amount); err != nil {
-        w.WriteHeader(http.StatusBadRequest)
-        return
-    }
-    item, err := s.DB.GetItems(amount.Amount)
+    items, err := s.DB.GetItems()
     if err != nil {
         w.WriteHeader(http.StatusInternalServerError)
         return
     }
     w.WriteHeader(http.StatusOK)
-    if err := writeJSON(w, item); err != nil {
+    if err := writeJSON(w, items); err != nil {
         fmt.Println("[ERROR]", err)
         return
     }
