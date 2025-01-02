@@ -40,7 +40,7 @@ func (p PostgresDB) Init() error {
 func (p PostgresDB) GetItem(id int) (tp.Item, error) {
     query := 
     `
-    SELECT (title, price)
+    SELECT title, price
         FROM item
             WHERE id = $1
     `

@@ -10,6 +10,10 @@ import (
 )
 
 func (s Server) RegisterHandlers() {
+    // Frontend
+    s.Mux.Handle("/", http.FileServer(http.Dir("./dist")))
+
+    //API
     s.Mux.HandleFunc("GET /get-item", s.HandleGetItem)
     s.Mux.HandleFunc("GET /get-items", s.HandleGetItems)
 
@@ -32,7 +36,7 @@ func (s Server) HandleGetItem(w http.ResponseWriter, r *http.Request) {
         return
     }
     w.WriteHeader(http.StatusOK)
-    if err := WriteJSON(w, item); err != nil {
+    if err := writeJSON(w, item); err != nil {
         fmt.Println("[ERROR]", err)
         return
     }
@@ -51,7 +55,7 @@ func (s Server) HandleGetItems(w http.ResponseWriter, r *http.Request) {
         return
     }
     w.WriteHeader(http.StatusOK)
-    if err := WriteJSON(w, item); err != nil {
+    if err := writeJSON(w, item); err != nil {
         fmt.Println("[ERROR]", err)
         return
     }
@@ -75,12 +79,12 @@ func (s Server) HandlePing(w http.ResponseWriter, r *http.Request) {
     }{ 
         Ping: "pong", 
     }
-    if err := WriteJSON(w, ping); err != nil {
+    if err := writeJSON(w, ping); err != nil {
         w.WriteHeader(http.StatusInternalServerError)
     }
 }
 
-func WriteJSON(w http.ResponseWriter, v any) error {
+func writeJSON(w http.ResponseWriter, v any) error {
     w.Header().Add("Content-Type", "application/json")
     data, err := json.Marshal(v)
     if err != nil {
